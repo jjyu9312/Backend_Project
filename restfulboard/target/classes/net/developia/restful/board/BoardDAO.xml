@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.developia.restful.board.BoardDAO">
+	<select id="getBoardList" resultType="BoardDTO">
+	select b.boa_no, 
+	       b.boa_name, 
+	       u.usr_no as "userDTO.usr_no", 
+	       u.usr_id as "userDTO.usr_id", 
+	       u.usr_name as "userDTO.usr_name"
+	from   t_board b inner join t_user u
+	on     b.usr_no = u.usr_no
+	where  b.boa_status = 1
+	order  by b.boa_name asc
+	</select>
+	
+	<select id="getBoard" parameterType="int" resultType="BoardDTO">
+	select b.boa_no, b.boa_name, 
+	       u.usr_name as "userDTO.usr_name", 
+	       u.usr_id   as "userDTO.usr_id"
+	from   t_board b inner join t_user u
+	on     b.usr_no = u.usr_no
+	where  b.boa_no = #{boa_no}
+	</select>
+	
+	<select id="getArticleList" parameterType="int" resultType="ArticleDTO">
+	select a.art_no, a.art_title, a.art_regdate, a.art_readcnt,
+	       u.usr_id as "userDTO.usr_id",
+	       u.usr_name as "userDTO.usr_name"
+	from   t_article a inner join t_user u
+	on     a.usr_no = u.usr_no
+	where  a.boa_no = #{boa_no}
+	order  by a.art_no desc
+	</select>
+	
+	<update id="updateReadcnt" parameterType="long">
+	update t_article set
+	       art_readcnt = art_readcnt + 1
+	where  art_no = #{art_no}
+	</update>
+		
+	<select id="getArticle" parameterType="long" resultType="ArticleDTO">
+	select art_no, art_title, art_content, art_like, art_dislike, 
+	       art_regdate, art_readcnt, art_com_cnt, art_ip, boa_no, 
+	       usr_no as "userDTO.usr_no", usr_id as "userDTO.usr_id",
+	       usr_name as "userDTO.usr_name"
+	from   t_article inner join t_user
+	using  (usr_no)
+	where  art_no = #{art_no}
+	</select>
+	
+	<insert id="insertBoard" parameterType="BoardDTO">
+	insert into t_board(boa_no, boa_name, usr_no)
+	values(seq_board.nextval, #{boa_name}, #{userDTO.usr_no})	
+	</insert>
+	
+	<insert id="insertArticle" parameterType="ArticleDTO">
+	insert into t_article(art_no, art_title, art_content, art_ip, boa_no, usr_no)
+	values(seq_article.nextval, #{art_title},#{art_content}, #{art_ip}, #{boa_no}, #{userDTO.usr_no})
+	</insert>
+	
+	<delete id="deleteArticle" parameterType="ArticleDTO">
+	delete from t_article
+	where  art_no = #{art_no} and usr_no = #{userDTO.usr_no}
+	</delete>
+	
+	<update id="updateArticle" parameterType="ArticleDTO">
+	update  t_article set
+			art_title   = #{art_title},
+			art_content = #{art_content}
+	where   art_no = #{art_no} and usr_no = #{userDTO.usr_no}
+	</update>
+	
+	<insert id="insertComment" parameterType="CommentDTO">
+	insert into t_comment(com_no,com_content,com_ip,art_no,usr_no)
+	values(seq_comment.nextval,#{com_content},#{com_ip},#{art_no},#{userDTO.usr_no})
+	</insert>
+	
+	<select id="getCommentList" parameterType="CommentDTO" resultType="CommentDTO">
+	select com_no, com_content, com_regdate, com_like, com_dislike
+	      ,com_ip, art_no, usr_no as "userDTO.usr_no", usr_id as "userDTO.usr_id"
+	      ,usr_name as "userDTO.usr_name"
+	from   t_comment c inner join t_user u
+	using  (usr_no)
+	where  art_no = #{art_no}
+	order  by com_no desc
+	</select>
+	
+	<delete id="deleteComment" parameterType="CommentDTO">
+	delete from t_comment
+	where com_no = #{com_no} and  usr_no = #{userDTO.usr_no}
+	</delete>
+		
+	<update id="updateComment" parameterType="CommentDTO">
+	update t_comment set
+	       com_content = #{com_content}
+	where com_no = #{com_no} and  usr_no = #{userDTO.usr_no}
+	</update>
+</mapper>
