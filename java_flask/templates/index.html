@@ -1,0 +1,26 @@
+<html>
+
+<head>
+    <title>사용자가 좋아하는 여행지 추천 서비스</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'style.css') }}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+<h1>당신이 원하는 여행 테마는?!</h1>
+<script>
+    var theme = {{pred}}
+    if(theme == 0) {
+        document.write("당신이 고른 테마는 체험입니다.")
+    } else if (theme == 1) {
+        document.write("당신이 고른 테마는 바다입니다.")
+    } else if (theme == 2) {
+        document.write("당신이 고른 테마는 문화입니다.")
+    } else {
+        document.write("당신이 고른 테마는 산입니다.")
+    }
+ </script>
+</body>
+
+</html>
